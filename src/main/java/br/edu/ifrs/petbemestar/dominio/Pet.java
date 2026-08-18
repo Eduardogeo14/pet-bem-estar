@@ -3,8 +3,6 @@ package br.edu.ifrs.petbemestar.dominio;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +11,13 @@ import java.util.List;
 public class Pet {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String nomeBicho;
 	private String raca;
 	private int idade;
 	private String observacoes;
+	private double peso;
 	
 	@Enumerated(EnumType.STRING)
 	private TipoBichoEnum tipoBicho;
@@ -31,11 +29,12 @@ public class Pet {
 	
 	public Pet() {}
 	
-	public Pet(TipoBichoEnum tipoBicho, String nomeBicho, String raca, int idade, String observacoes) {
+	public Pet(TipoBichoEnum tipoBicho, String nomeBicho, String raca, int idade, double peso, String observacoes) {
 		setTipoBicho(tipoBicho);
 		setNomeBicho(nomeBicho);
 		this.raca = raca;
 		setIdade(idade);
+		setPeso(peso);
 		this.observacoes = observacoes;
 	}
 	
@@ -51,6 +50,18 @@ public class Pet {
 		} else {
 			this.nomeBicho = nomeBicho;
 		}
+	}
+	
+	public void setPeso(double peso) {
+		if(peso <=0) {
+			throw new IllegalArgumentException("Peso inválido");
+		} else {
+			this.peso = peso;
+		}
+	}
+	
+	public double getPeso() {
+		return this.peso;
 	}
 	
 	public void setTipoBicho(TipoBichoEnum tipoBicho) {
