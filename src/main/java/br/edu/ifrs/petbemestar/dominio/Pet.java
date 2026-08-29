@@ -3,7 +3,11 @@ package br.edu.ifrs.petbemestar.dominio;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +15,7 @@ import java.util.List;
 public class Pet {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private String nomeBicho;
@@ -21,27 +26,44 @@ public class Pet {
 	
 	@Enumerated(EnumType.STRING)
 	private TipoBichoEnum tipoBicho;
+
+	@Enumerated(EnumType.STRING)
+	private PorteEnum porte;
 	
+	@ManyToOne
+	private Tutor cliente;
 	
-	private Cliente cliente;
-	
+	@OneToMany(mappedBy = "pet")
 	private List<Atendimento> atendimentos = new ArrayList<>();
 	
 	public Pet() {}
 	
-	public Pet(TipoBichoEnum tipoBicho, String nomeBicho, String raca, int idade, double peso, String observacoes) {
+	public Pet(TipoBichoEnum tipoBicho, String nomeBicho, String raca, int idade, double peso, PorteEnum porte, String observacoes) {
 		setTipoBicho(tipoBicho);
 		setNomeBicho(nomeBicho);
 		this.raca = raca;
 		setIdade(idade);
 		setPeso(peso);
+		this.porte = porte;
 		this.observacoes = observacoes;
 	}
-	
 	
 	public void adicionarAtendimento(Atendimento atendimento) {
 		this.atendimentos.add(atendimento);
 		atendimento.setPet(this);
+	}
+
+	public Atendimento ultimoAtendimentoRealizado() {
+		Atendimento ultimo = null;
+		for (Atendimento atendimento : atendimentos) {
+			if (atendimento.getSituacao() != StatusAgendamentoEnum.CONCLUIDO) {
+				continue;
+			}
+			if (ultimo == null || atendimento.getDataHora().isAfter(ultimo.getDataHora())) {
+				ultimo = atendimento;
+			}
+		}
+		return ultimo;
 	}
 
 	public void setNomeBicho(String nomeBicho) {
@@ -53,7 +75,7 @@ public class Pet {
 	}
 	
 	public void setPeso(double peso) {
-		if(peso <=0) {
+		if(peso <= 0) {
 			throw new IllegalArgumentException("Peso inválido");
 		} else {
 			this.peso = peso;
@@ -100,6 +122,14 @@ public class Pet {
 		return this.tipoBicho;
 	}
 
+	public PorteEnum getPorte() {
+		return this.porte;
+	}
+
+	public void setPorte(PorteEnum porte) {
+		this.porte = porte;
+	}
+
 	public int getIdade() {
 		return this.idade;
 	}
@@ -108,15 +138,20 @@ public class Pet {
 		return this.observacoes;
 	}
 	
-	public Cliente getCliente() {
+	public Tutor getCliente() {
 		return cliente;
 	}
 
-	public void setCliente(Cliente cliente) {
+	public void setCliente(Tutor cliente) {
 		this.cliente = cliente;
 	}
 
 	public List<Atendimento> getAtendimentos() {
 		return atendimentos;
+	}
+
+	@Override
+	public String toString() {
+		return nomeBicho + " (" + tipoBicho + ")";
 	}
 }

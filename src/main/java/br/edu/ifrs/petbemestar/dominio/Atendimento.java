@@ -3,37 +3,38 @@ package br.edu.ifrs.petbemestar.dominio;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 
 @Entity
 public class Atendimento {
-	
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private LocalDateTime dataHora;
-    private double valorCobrado;
-    private String observacao;
 
     @Enumerated(EnumType.STRING)
-    private StatusAgendamentoEnum status;
-    
-    @Enumerated(EnumType.STRING)
-    private TipoServicoEnum tipoServico;
+    private TipoServicoEnum tipo;
 
+    @Enumerated(EnumType.STRING)
+    private StatusAgendamentoEnum situacao;
+
+    private Double valor;
+
+    @ManyToOne
     private Pet pet;
-    private Servico servico;
-    private Consulta consulta;
-	
+
     public Atendimento() {}
-	
-    public Atendimento(LocalDateTime dataHora, TipoServicoEnum tipoServico, Pet pet, double valorCobrado) {
-        setDataHora(dataHora);
-        setTipoServico(tipoServico);
-        setPet(pet);
-        setValorCobrado(valorCobrado);
-        this.status = StatusAgendamentoEnum.MARCADO;
+
+    public Atendimento(LocalDateTime dataHora, TipoServicoEnum tipo) {
+        this.dataHora = dataHora;
+        this.tipo = tipo;
+        this.situacao = StatusAgendamentoEnum.MARCADO;
     }
 
     public Long getId() {
@@ -45,78 +46,39 @@ public class Atendimento {
     }
 
     public LocalDateTime getDataHora() {
-        return this.dataHora;
+        return dataHora;
     }
 
-    public void setDataHora(LocalDateTime dataHora) {
-        if (dataHora == null || dataHora.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Horário e data inválidos.");
-        }
-        this.dataHora = dataHora;
+    public TipoServicoEnum getTipo() {
+        return tipo;
     }
 
-    public TipoServicoEnum getTipoServico() {
-        return this.tipoServico;
+    public StatusAgendamentoEnum getSituacao() {
+        return situacao;
     }
 
-    public void setTipoServico(TipoServicoEnum tipoServico) {
-        if (tipoServico == null) {
-            throw new IllegalArgumentException("Tipo de serviço inválido.");
-        }
-        this.tipoServico = tipoServico;
+    public void setSituacao(StatusAgendamentoEnum situacao) {
+        this.situacao = situacao;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
     }
 
     public Pet getPet() {
-        return this.pet;
+        return pet;
     }
 
     public void setPet(Pet pet) {
-        if (pet == null) {
-            throw new IllegalArgumentException("Pet inválido.");
-        }
         this.pet = pet;
     }
 
-    public double getValorCobrado() {
-        return this.valorCobrado;
-    }
-
-    public void setValorCobrado(double valorCobrado) {
-        if (valorCobrado < 0) {
-            throw new IllegalArgumentException("Valor inválido.");
-        }
-        this.valorCobrado = valorCobrado;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
-    }
-
-    public StatusAgendamentoEnum getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusAgendamentoEnum status) {
-        this.status = status;
-    }
-
-    public Servico getServico() {
-        return servico;
-    }
-
-    public void setServico(Servico servico) {
-        this.servico = servico;
-    }
-
-    public Consulta getConsulta() {
-        return consulta;
-    }
-
-    public void setConsulta(Consulta consulta) {
-        this.consulta = consulta;
+    @Override
+    public String toString() {
+        return tipo + " em " + dataHora + " (" + situacao + ")";
     }
 }

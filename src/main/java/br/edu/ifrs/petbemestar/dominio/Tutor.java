@@ -4,11 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Cliente {
+public class Tutor {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,18 +20,18 @@ public class Cliente {
 	private String cpf;
 	private String email;
 	
+	@OneToMany(mappedBy = "cliente")
 	private List<Pet> pets = new ArrayList<>();
 	
+	public Tutor() {}
 	
-	public Cliente() {}
-	
-	
-	public Cliente(String nome, String cpf, String telefone, String email) {
+	public Tutor(String nome, String cpf, String telefone, String email) {
 		setNome(nome);
 		setCpf(cpf);
 		setTelefone(telefone);
 		setEmail(email);
 	}
+	
 	
 	public void adicionarPet(Pet pet) {
 		this.pets.add(pet);
@@ -93,8 +94,12 @@ public class Cliente {
 		return this.cpf;
 	}
 	
-	
 	public List<Pet> getPets() {
 		return this.pets;
+	}
+
+	@Override
+	public String toString() {
+		return nome;
 	}
 }
